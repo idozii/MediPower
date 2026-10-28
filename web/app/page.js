@@ -123,7 +123,8 @@ export default function Page() {
       <section className="hero">
         <div className="hero-copy">
           <p className="eyebrow">MediPower / Research prototype</p>
-          <h1>MediPower — research-only condition information retrieval</h1>
+          <h1>MediPower</h1>
+          <p className="hero-lead">Explore condition information through an explainable AI research prototype.</p>
           <p>
             Experimental condition retrieval and facility ranking for fictional examples only. Not a medical diagnosis, triage service, or substitute for qualified care. Do not enter identifying or real patient health information. In an emergency, contact your local emergency services.
           </p>
@@ -137,7 +138,12 @@ export default function Page() {
         <div className="hero-card">
           <div className="hero-card-top">
             <span className="status-pill">Research boundary</span>
-            <strong>Interpret outputs as hypotheses</strong>
+            <strong>Three steps, with limitations visible</strong>
+            <ol className="hero-steps" aria-label="Research exploration stages">
+              <li>Enter a fictional symptom example</li>
+              <li>Review candidate condition information</li>
+              <li>Explore experimental facility rankings</li>
+            </ol>
           </div>
           <p>
             An experimental ranking score is not a disease probability, facility quality assessment, or clinical referral. The system may return an incorrect or incomplete set of candidates.
