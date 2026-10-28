@@ -173,3 +173,7 @@ so you can quickly review diseases that still need a valid DiagnosisValue.
 ### M8 — Source-aware stress testing
 
 [Reproducible, development-only abstention stress tests and cluster-aware evaluation](research/M8_CLUSTERED_STRESS.md). This adds constructed nonclinical overlap cases, subgroup audits, and grouping of duplicate synthetic symptom narratives for paired uncertainty estimates. These examples were designed after viewing earlier failures and are **not independent validation**. Clinical ontology mapping and official test access remain blocked.
+
+### M9 — Task-intent-aware research abstention
+
+[M9 two-stage zero-shot intent ablation and source-disjoint evaluation requirements](research/M9_INTENT_AWARE_ABSTENTION.md). On a post-hoc 30-query stress suite, lexical overlap alone could not distinguish medical terminology used in nonclinical tasks from genuine symptom descriptions. M9 separates a generic query-task intent gate from disease catalog ranking **for development diagnostics only**; this is not clinically validated and is not enabled in the public API.
