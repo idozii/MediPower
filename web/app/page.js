@@ -7,19 +7,19 @@ const EXAMPLES = [
   {
     label: "Chest pain + shortness of breath",
     text: "chest pain and shortness of breath",
-    location: "Austin, TX",
+    location: "Sydney CBD",
     top_k: 5
   },
   {
     label: "Flu-like symptoms",
     text: "fever, cough, body aches, sore throat",
-    location: "Chicago, IL",
+    location: "Melbourne",
     top_k: 5
   },
   {
     label: "Abdominal pain",
     text: "lower abdominal pain with nausea",
-    location: "Seattle, WA",
+    location: "Brisbane",
     top_k: 5
   }
 ];
@@ -189,7 +189,7 @@ export default function Page() {
                 maxLength={160}
                 value={form.location}
                 onChange={(event) => setForm((current) => ({ ...current, location: event.target.value }))}
-                placeholder="Example: Sydney CBD (fictional)"
+                placeholder="Supported demo city (e.g. Sydney CBD)"
               />
             </label>
 
@@ -233,7 +233,7 @@ export default function Page() {
           </div>
 
           <div role="status" aria-live="polite" aria-atomic="true">
-            {error ? <p className="feedback error" role="alert">{error}</p> : <p className="feedback">Provide a city OR both coordinates. No patient data should be entered.</p>}
+            {error ? <p className="feedback error" role="alert">{error}</p> : <p className="feedback">Use a supported demo city (Sydney CBD, Melbourne or Brisbane) OR both coordinates. External geocoding is disabled by default. No patient data should be entered.</p>}
           </div>
         </form>
 
