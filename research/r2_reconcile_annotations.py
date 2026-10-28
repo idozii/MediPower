@@ -18,7 +18,7 @@ from research.validate_intent_cohort import INTENT_LABELS, REQUIRED, audit
 ADJUDICATION_FIELDS = ("query_id", "adjudicator_id", "final_label")
 
 
-def read_review(path: Path, expected_ids: set[str]) -> dict[str, dict]:
+def read_review(path: Path, expected_texts: dict[str, str]) -> dict[str, dict]:
     with path.open(encoding="utf-8-sig", newline="") as stream:
         reader = csv.DictReader(stream)
         if reader.fieldnames is None or set(PACKET_FIELDS) - set(reader.fieldnames):
@@ -33,8 +33,10 @@ def read_review(path: Path, expected_ids: set[str]) -> dict[str, dict]:
             raise ValueError("Duplicate/blank reviewer query_id")
         if not reviewer or label not in INTENT_LABELS:
             raise ValueError("Missing reviewer identity or unsupported/missing label")
+        if str(row.get("text") or "").strip() != expected_texts.get(qid):
+            raise ValueError("Reviewer packet text mismatch; verify independent annotations on the original prompt")
         result[qid] = {"annotator_id": reviewer, "intent_label": label}
-    if set(result) != expected_ids:
+    if set(result) != set(expected_texts):
         raise ValueError("Reviewer query IDs do not match complete source cohort")
     return result
 
@@ -75,10 +77,13 @@ def reconcile(source: Path, reviewer_a: Path, reviewer_b: Path,
         raise ValueError("Output must not overwrite the original source or reviewer evidence")
     if reviewer_a.resolve() == reviewer_b.resolve():
         raise ValueError("Two separate reviewer packet files required")
+    if known_queries is None:
+        known_queries = Path("research/examples/abstention_stress_v1_queries.jsonl")
     sources = read_development_sources(source, known_queries=known_queries)
     ids = {row["query_id"] for row in sources}
-    a = read_review(reviewer_a, ids)
-    b = read_review(reviewer_b, ids)
+    source_texts = {row["query_id"]: row["text"].strip() for row in sources}
+    a = read_review(reviewer_a, source_texts)
+    b = read_review(reviewer_b, source_texts)
     disagreements = {qid for qid in ids if a[qid]["intent_label"] != b[qid]["intent_label"]}
     reviews = read_adjudications(adjudications, disagreements)
     results = []
