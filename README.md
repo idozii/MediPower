@@ -18,6 +18,11 @@ See [research/README.md](research/README.md) for our evaluation protocol, leakag
 
 See [M2 research runbook](research/M2_BENCHMARK.md) for reproduction commands, independently verified descriptive dataset counts, TF-IDF/BM25/dense/hybrid baselines and important clinical limitations. The production API currently calls the retrieval service, not the separately trained 8-class LogisticRegression classifier. Do not describe the classifier's historical 100% score as independently validated medical performance.
 
+
+### M3/M4 follow-up: external ontology review and abstention gate
+
+[Development-only DDXPlus mapping coverage and abstention ablation guide](research/M7_COVERAGE_AND_ABSTENTION.md). The 49 synthetic source pathologies have NOT been independently matched to the 29-condition catalog. Dense/Hybrid false positives on one toy negative query motivated a controlled lexical-overlap gate experiment; no clinical safety or generalization claims are made.
+
 ## Research milestones (M1–M6)
 
 The repo is a **nonclinical research prototype**. M1/M2 establish evaluation, leakage auditing and lexical baselines. M3/M4/M5/M6 extend the research pipeline but **external data/clinician-approved test results have NOT been collected**. Do not use with real patient data or for medical decisions.
