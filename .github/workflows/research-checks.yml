@@ -65,6 +65,8 @@ jobs:
         run: npm ci --prefix web
       - name: Test all frontend validation and proxy contracts
         run: npm test --prefix web
+      - name: Audit frontend installed dependencies (high+)
+        run: npm audit --prefix web --audit-level=high
       - name: Build Next.js frontend
         run: npm run build --prefix web
 
