@@ -3,6 +3,8 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 import json
 
+from app.config import ALLOW_EXTERNAL_GEOCODING
+
 
 KNOWN_LOCATIONS = {
     "sydney": (-33.8688, 151.2093),
@@ -47,7 +49,7 @@ def _try_parse_lat_lon(value: str):
 
 
 @lru_cache(maxsize=256)
-def _geocode_cached(raw: str, timeout: float):
+def _geocode_cached(raw: str, timeout: float, allow_external: bool):
     key = raw.lower()
 
     parsed = _try_parse_lat_lon(raw)
@@ -56,7 +58,6 @@ def _geocode_cached(raw: str, timeout: float):
             "lat": parsed[0],
             "lon": parsed[1],
             "source": "parsed",
-            "query": raw,
         }
 
     if key in KNOWN_LOCATIONS:
@@ -68,11 +69,15 @@ def _geocode_cached(raw: str, timeout: float):
             "lat": lat,
             "lon": lon,
             "source": "known_map",
-            "query": raw,
             "note": note,
         }
 
-    # Best-effort online fallback (OpenStreetMap Nominatim)
+    # Default to NO outbound transmission of user-provided location text.
+    # Third-party lookups require explicit operator opt-in and a privacy review.
+    if not allow_external:
+        return None
+
+    # Best-effort opt-in online fallback (OpenStreetMap Nominatim)
     try:
         url = f"https://nominatim.openstreetmap.org/search?q={quote(raw)}&format=json&limit=1"
         req = Request(url, headers={"User-Agent": "healthcare-ai/1.0"})
@@ -85,7 +90,6 @@ def _geocode_cached(raw: str, timeout: float):
                 "lat": lat,
                 "lon": lon,
                 "source": "nominatim",
-                "query": raw,
             }
     except Exception:
         return None
@@ -100,5 +104,5 @@ def geocode_location(location_text: str, timeout: float = 3.0):
     raw = location_text.strip()
     # Normalize timeout precision to improve cache hit-rate.
     timeout_key = round(float(timeout), 1)
-    result = _geocode_cached(raw, timeout_key)
+    result = _geocode_cached(raw, timeout_key, bool(ALLOW_EXTERNAL_GEOCODING))
     return dict(result) if result is not None else None
