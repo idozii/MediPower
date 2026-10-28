@@ -166,7 +166,13 @@ def convert(
     with queries.open("w", encoding="utf-8") as q, gold.open("w", encoding="utf-8") as g:
         for query_id, text, target in items:
             q.write(json.dumps({"query_id": query_id, "text": text, "split": split}) + "\n")
-            g.write(json.dumps({"query_id": query_id, "split": split, "relevant_disease_ids": [target]}) + "\n")
+            # Near-identical synthetic evidence narratives must not be treated
+            # as independent patients for query-level bootstrap CIs.
+            text_key = " ".join(text.lower().split())
+            group_id = hashlib.sha256(text_key.encode("utf-8")).hexdigest()[:20]
+            g.write(json.dumps({"query_id": query_id, "split": split,
+                                "relevant_disease_ids": [target],
+                                "group_id": group_id}) + "\n")
 
     report = {
         "protocol": "medipower-m3-ddxplus-adapter-v1",
