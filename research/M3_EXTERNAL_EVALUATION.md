@@ -23,3 +23,12 @@ Sample-only development smoke run: append --max-rows 100 to the converter (deter
 
 ## Exit criteria
 Confirm exact dataset publication license and attribution; mapping coverage; non-overlap and source provenance; independent evidence annotations where needed; target model revisions and predefined metrics; and authorization to run the official test. No clinical or real-world safety efficacy may be claimed. Current status: adapter only tested on invented fixtures; official external data not accessed, coverage unknown.
+
+## Candidate mapping assistant (no auto-approval)
+After downloading the English DDXPlus metadata, generate *pending* name-similarity candidates:
+
+    python -m research.suggest_ddxplus_mappings --conditions research/private_data/ddxplus/release_conditions.json --catalog app/data/diseases.csv --out research/private_data/ddxplus_mapping_candidates.csv
+
+Output keeps target_disease_id blank and review_status pending. A reviewer must determine any equivalent labels; textual similarity is not medical equivalence. Copy reviewed rows to ddxplus_reviewed_mapping.csv only when truly approved. Send aggregate counts and status, not patient-level data.
+
+Official English publisher page: https://figshare.com/articles/dataset/DDXPlus_Dataset_English_/22687585 ; version 2 posted 9 March 2026. Record exact downloaded version, license, provenance and checksums before use.
