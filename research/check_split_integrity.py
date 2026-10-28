@@ -23,12 +23,14 @@ def normalized_hash(value: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()
 
 
-def validate(queries: Path, gold: Path, catalog: Path) -> dict:
+def validate(queries: Path, gold: Path, catalog: Path, *, allow_test: bool = False) -> dict:
     with catalog.open(encoding="utf-8", newline="") as file:
         allowed = {str(row["disease_id"]).strip() for row in csv.DictReader(file)}
     if not allowed:
         raise ValueError("Catalog cannot be empty")
     inputs = indexed(load_jsonl(queries), "queries")
+    if not allow_test and any(item.get("split") == "test" for item in inputs.values()):
+        raise ValueError("Official test split is locked until explicitly authorized")
     labels = indexed(load_jsonl(gold), "gold")
     if inputs.keys() != labels.keys():
         raise ValueError("Query and gold IDs must match")
@@ -84,12 +86,12 @@ def main() -> None:
     p.add_argument("--test-gold", type=Path)
     p.add_argument("--allow-test", action="store_true")
     args = p.parse_args()
-    dev = validate(args.queries, args.gold, args.catalog)
+    dev = validate(args.queries, args.gold, args.catalog, allow_test=args.allow_test)
     report = {k: v for k, v in dev.items() if k != "unique_text_hashes"}
     if args.test_queries or args.test_gold:
         if not (args.test_queries and args.test_gold and args.allow_test):
             p.error("Both test files and --allow-test are required after authorization")
-        test = validate(args.test_queries, args.test_gold, args.catalog)
+        test = validate(args.test_queries, args.test_gold, args.catalog, allow_test=args.allow_test)
         report["between_splits"] = compare(dev, test)
         if not report["between_splits"]["split_disjoint"]:
             raise ValueError("Development/test text contamination detected")
