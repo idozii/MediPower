@@ -12,8 +12,6 @@ from app.config import (
     MIN_DISEASE_CONFIDENCE,
     RETRIEVAL_QUERY_CACHE_SIZE,
 )
-from app.models.disease_model import DiseaseRetriever
-from app.models.embedding import EmbeddingModel
 from app.utils.symptom_matching import (
     clinical_boost,
     confidence_threshold_for_query,
@@ -135,6 +133,11 @@ class DiseaseService:
             return
 
         try:
+            # Offline smoke tests should not require FAISS, Torch or a model download.
+            # Import semantic modules only when semantic mode is requested.
+            from app.models.embedding import EmbeddingModel
+            from app.models.disease_model import DiseaseRetriever
+
             self.embedding_model = EmbeddingModel()
             self.retriever = DiseaseRetriever(self.embedding_model)
             self.mode = "semantic_faiss"
