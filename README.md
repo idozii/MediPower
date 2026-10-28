@@ -1,14 +1,18 @@
-# Healthcare Diagnosis + Recommendation System
+# MediPower — Healthcare Information Retrieval & Care-Navigation Research Prototype
 
 ## Goal
 Build a web service that:
 1. Takes user symptom text
-2. Returns top-5 likely diseases
-3. Recommends best departments or hospitals based on:
+2. Ranks candidate condition information for exploratory retrieval (NOT a diagnosis)
+3. Produces experimental department/facility rankings (NOT treatment or clinical referrals) based on:
    - distance
    - provider performance
    - drop-off rate
    - patient flow efficiency
+
+> **Research demonstration only.** Outputs are unvalidated ranking hypotheses, not medical advice, clinical diagnosis, or emergency triage. The legacy retrieval `confidence` field is a heuristic ranking score, not a calibrated probability. Do not enter real patient information.
+
+See [research/README.md](research/README.md) for our evaluation protocol, leakage audit priorities, restrictions and a tested offline ranking-metrics scaffold. No independent clinical benchmark results are currently claimed.
 
 ## Architecture
 User Input -> Disease Retrieval (Embedding + FAISS)
