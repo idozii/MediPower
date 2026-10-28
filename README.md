@@ -14,6 +14,22 @@ Build a web service that:
 
 See [research/README.md](research/README.md) for our evaluation protocol, leakage audit priorities, restrictions and a tested offline ranking-metrics scaffold. No independent clinical benchmark results are currently claimed.
 
+## Milestone M2: leakage audit and baseline benchmarks
+
+See [M2 research runbook](research/M2_BENCHMARK.md) for reproduction commands, independently verified descriptive dataset counts, TF-IDF/BM25/dense/hybrid baselines and important clinical limitations. The production API currently calls the retrieval service, not the separately trained 8-class LogisticRegression classifier. Do not describe the classifier's historical 100% score as independently validated medical performance.
+
+## Research milestones (M1–M6)
+
+The repo is a **nonclinical research prototype**. M1/M2 establish evaluation, leakage auditing and lexical baselines. M3/M4/M5/M6 extend the research pipeline but **external data/clinician-approved test results have NOT been collected**. Do not use with real patient data or for medical decisions.
+
+- [M3: approved external synthetic dataset protocol](research/M3_EXTERNAL_EVALUATION.md)
+- [M4: controlled ablations and paired robustness evaluation](research/M4_ABLATIONS.md)
+- [M5: safety, privacy and transparency checklist](research/M5_SAFETY_REVIEW.md)
+- [M6: reproducibility and paper-readiness blockers](research/M6_REPRODUCIBILITY.md)
+- [Provisional manuscript outline](research/paper/MANUSCRIPT_OUTLINE.md)
+
+Development-only source audit results are documented at [M2](research/results/M2_DEV_AUDIT_2026-10-28.md). Scientific and clinical generalization claims remain blocked pending external source verification, expert-reviewed mapping and independent held-out evaluation.
+
 ## Architecture
 User Input -> Disease Retrieval (Embedding + FAISS)
            -> Top-K Diseases
