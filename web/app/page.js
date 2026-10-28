@@ -119,7 +119,7 @@ export default function Page() {
   }
 
   return (
-    <main className="shell">
+    <main id="main-content" className="shell">
       <section className="hero">
         <div className="hero-copy">
           <p className="eyebrow">MediPower / Research prototype</p>
