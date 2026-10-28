@@ -169,3 +169,7 @@ so you can quickly review diseases that still need a valid DiagnosisValue.
 - Caching embeddings with Redis
 - Graph-based ranking using NetworkX
 - Explanation layer for recommendation transparency
+
+### M8 — Source-aware stress testing
+
+[Reproducible, development-only abstention stress tests and cluster-aware evaluation](research/M8_CLUSTERED_STRESS.md). This adds constructed nonclinical overlap cases, subgroup audits, and grouping of duplicate synthetic symptom narratives for paired uncertainty estimates. These examples were designed after viewing earlier failures and are **not independent validation**. Clinical ontology mapping and official test access remain blocked.

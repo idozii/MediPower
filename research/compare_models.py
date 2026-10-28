@@ -69,13 +69,39 @@ def compare(gold: list[dict], models: dict[str, list[dict]], *,
 
     keys = list(per_query[baseline][positive[0]])
     rng = random.Random(seed)
-    # Paired resampling: all models use identical resampled query identifiers.
-    draws = [rng.choices(positive, k=len(positive)) for _ in range(samples)] if len(positive) >= min_ci_queries else []
+    # Official cohort rows can reuse identical symptom narratives. When a group_id
+    # is supplied by M3, resample the entire group together, never individual rows.
+    provided = [truth[qid].get("group_id") for qid in positive]
+    has_groups = any(value is not None for value in provided)
+    if has_groups and (
+        any(not isinstance(value, str) or not value.strip() for value in provided)
+    ):
+        raise ValueError("Every positive query must carry a nonempty group_id when grouping is enabled")
+    if has_groups:
+        cluster_members: dict[str, list[str]] = {}
+        for qid, group in zip(positive, provided):
+            cluster_members.setdefault(group, []).append(qid)
+        cluster_ids = sorted(cluster_members)
+        resampling_units = len(cluster_ids)
+        bootstrap_unit = "group_id"
+        draws = [
+            [qid for group in rng.choices(cluster_ids, k=resampling_units)
+             for qid in cluster_members[group]]
+            for _ in range(samples)
+        ] if resampling_units >= min_ci_queries else []
+    else:
+        resampling_units = len(positive)
+        bootstrap_unit = "query_id"
+        draws = [rng.choices(positive, k=len(positive)) for _ in range(samples)] if resampling_units >= min_ci_queries else []
 
     report = {"protocol": "medipower-m4-paired-bootstrap-v1", "split": split,
               "positive_queries": len(positive), "negative_controls": len(negative),
               "baseline": baseline, "k": k, "bootstrap_samples": samples,
-              "seed": seed, "intervals_available": bool(draws), "models": {}}
+              "seed": seed, "intervals_available": bool(draws),
+              "bootstrap_unit": bootstrap_unit,
+              "independent_resampling_units": resampling_units,
+              "independence_warning": "Identical-text clustering is a partial safeguard only; source/patient/template dependencies may remain.",
+              "models": {}}
     for name in models:
         metrics = {}
         differences = {}
