@@ -189,3 +189,7 @@ so you can quickly review diseases that still need a valid DiagnosisValue.
 ### Phase 1 R2 — Independent intent annotation operations
 
 [Human review packets, reconciliation and development-only evaluation](research/R2_ANNOTATION_OPERATIONS.md). These scripts are an operational extension to the M11 study protocol; real source permissions and independent human labels remain outstanding. Do not treat this as a finished independent benchmark.
+
+### Phase 1 — Live Next.js/FastAPI integration gate
+
+[Nonclinical W1/W2/W3 smoke test and local runbook](research/PHASE1_W1_W3_INTEGRATION.md). This verifies live HTTP contracts between the production Next.js server, forced-offline FastAPI retrieval and experimental facility disclosures using a fictional example. Passing does NOT establish medical or facility-ranking accuracy. R2 independently annotated data remain outstanding.
