@@ -1,0 +1,4 @@
+{"query_id":"example-01","split":"development","text":"wheezing and night-time coughing with chest tightness"}
+{"query_id":"example-02","split":"development","text":"my tooth hurts when biting and has a visible cavity"}
+{"query_id":"example-03","split":"development","text":"dull band-like headache with pressure on both sides of my head"}
+{"query_id":"example-negative","split":"development","text":"How do I create a new Git branch?"}
