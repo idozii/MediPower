@@ -73,9 +73,9 @@ code {
 
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.7fr);
+  grid-template-columns: minmax(0, 1.15fr) minmax(310px, 0.85fr);
   gap: 18px;
-  align-items: stretch;
+  align-items: start;
   margin-bottom: 18px;
 }
 
@@ -96,8 +96,8 @@ code {
 .hero-card {
   padding: 24px;
   display: grid;
-  align-content: space-between;
-  gap: 18px;
+  align-content: start;
+  gap: 14px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(247, 251, 249, 0.72));
 }
 
@@ -124,8 +124,9 @@ code {
 }
 
 .hero h1 {
-  font-size: clamp(2.2rem, 4vw, 4.2rem);
-  max-width: 12ch;
+  font-size: clamp(2.75rem, 5vw, 4.25rem);
+  max-width: none;
+  letter-spacing: -0.045em;
 }
 
 .hero p {
@@ -138,7 +139,7 @@ code {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 24px;
+  margin-top: 16px;
 }
 
 .hero-badges span,
@@ -190,14 +191,15 @@ code {
 }
 
 .panel-header h2 {
-  font-size: clamp(1.4rem, 2vw, 2rem);
+  font-size: clamp(1.35rem, 1.8vw, 1.75rem);
+  line-height: 1.15;
 }
 
 .sample-row {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .ghost-button,
@@ -494,4 +496,46 @@ code {
   .score-pill { justify-content: flex-start; }
   .primary-button { width: 100%; }
   .sample-row { display: grid; grid-template-columns: 1fr; width: 100%; }
+}
+
+/* W1 refinement: visual hierarchy and the previously empty hero side card. */
+.hero-lead {
+  margin: 10px 0 16px;
+  max-width: 32ch;
+  font-size: clamp(1.14rem, 2vw, 1.56rem);
+  font-weight: 600;
+  line-height: 1.32 !important;
+  letter-spacing: -0.018em;
+  color: var(--ink) !important;
+}
+.hero-steps {
+  list-style: decimal;
+  padding: 14px 14px 14px 35px;
+  margin: 2px 0 0;
+  display: grid;
+  gap: 11px;
+  border: 1px solid rgba(22, 106, 87, 0.12);
+  border-radius: 14px;
+  background: rgba(22, 106, 87, 0.045);
+  color: var(--ink);
+  font-size: .91rem;
+  line-height: 1.4;
+}
+.hero-steps li::marker { color: var(--accent); font-weight: 700; }
+.hero-card .status-pill { width: fit-content; }
+.hero-card strong { font-size: 1.22rem; line-height: 1.25; }
+.hero-card p { margin: 0; }
+.form-panel .panel-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+.form-panel .panel-header h2 { max-width: 28ch; }
+.ghost-button { font-size: .87rem; padding: .7rem .9rem; }
+@media (max-width: 1080px) {
+  .hero-card { gap: 14px; }
+}
+@media (max-width: 720px) {
+  .hero h1 { font-size: clamp(2.45rem, 11vw, 3.3rem); }
+  .hero-lead { font-size: 1.12rem; }
 }
