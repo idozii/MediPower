@@ -14,6 +14,10 @@ Build a web service that:
 
 See [research/README.md](research/README.md) for our evaluation protocol, leakage audit priorities, restrictions and a tested offline ranking-metrics scaffold. No independent clinical benchmark results are currently claimed.
 
+## Milestone M2: leakage audit and baseline benchmarks
+
+See [M2 research runbook](research/M2_BENCHMARK.md) for reproduction commands, independently verified descriptive dataset counts, TF-IDF/BM25/dense/hybrid baselines and important clinical limitations. The production API currently calls the retrieval service, not the separately trained 8-class LogisticRegression classifier. Do not describe the classifier's historical 100% score as independently validated medical performance.
+
 ## Architecture
 User Input -> Disease Retrieval (Embedding + FAISS)
            -> Top-K Diseases
