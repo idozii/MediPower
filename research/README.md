@@ -41,3 +41,7 @@ Only aggregate scores are printed; no raw query text. A test file marked `split=
 - Audit retrieval score semantics, false confidence, abstention behavior, critical symptoms and emergency information flows.
 - Establish license and accuracy/provenance of the clinic, retention and diagnosis-volume tables. Never commit patient-level data.
 - Publish honest results **only after** approved external labels and held-out evaluations exist.
+
+## M2 extension
+
+See [M2_BENCHMARK.md](M2_BENCHMARK.md) for the classifier data-leakage audit, TF-IDF/BM25/dense/hybrid prediction exporter, development-only demonstrations and commands. Distinguish legacy classification metrics from the production retrieval pipeline; no external clinical benchmark has yet been performed.
