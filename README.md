@@ -177,3 +177,7 @@ so you can quickly review diseases that still need a valid DiagnosisValue.
 ### M9 — Task-intent-aware research abstention
 
 [M9 two-stage zero-shot intent ablation and source-disjoint evaluation requirements](research/M9_INTENT_AWARE_ABSTENTION.md). On a post-hoc 30-query stress suite, lexical overlap alone could not distinguish medical terminology used in nonclinical tasks from genuine symptom descriptions. M9 separates a generic query-task intent gate from disease catalog ranking **for development diagnostics only**; this is not clinically validated and is not enabled in the public API.
+
+### M10 — Intent risk–coverage diagnostics
+
+[M10: frozen M9 intent margins, false-abstention analysis and descriptive risk–coverage grid](research/M10_INTENT_RISK_COVERAGE.md). The owner's post-hoc M9 local run rejected 8/10 constructed symptom-information queries despite reducing off-topic false positives, so the experimental gate is **not approved for production**. M10 does not tune the gate or claim independent validation.
