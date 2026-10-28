@@ -305,7 +305,6 @@ export default function Page() {
                               <span className="score-pill" title="Experimental ranking score, not quality or probability">{scoreLabel(item.score)}</span>
                             </div>
                             <p>{item.department_name || item.facility_type || "Care site"}</p>
-                          {item.ranking_explanation?.disclosure ? <p className="field-hint">{item.ranking_explanation.disclosure}</p> : null}
                             {item.ranking_explanation?.disclosure ? <p className="field-hint">{item.ranking_explanation.disclosure}</p> : null}
                             <div className="metric-row">
                               <span>Distance {formatDistance(item.distance_km)}</span>
@@ -330,6 +329,7 @@ export default function Page() {
                             <span className="score-pill">{scoreLabel(item.score)}</span>
                           </div>
                           <p>{item.department_name || item.facility_type || "Care site"}</p>
+                          {item.ranking_explanation?.disclosure ? <p className="field-hint">{item.ranking_explanation.disclosure}</p> : null}
                           <div className="metric-row">
                             <span>Distance {formatDistance(item.distance_km)}</span>
                             <span>Provider proxy {scoreLabel(item.provider_score)}</span>
