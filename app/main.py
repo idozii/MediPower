@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse, HTMLResponse
 from app.api.routes import router
 
 app = FastAPI(
-    title="Healthcare Diagnosis + Recommendation System",
+    title="MediPower — Experimental Condition Retrieval",
     docs_url="/docs",
     openapi_url="/openapi.json",
 )
@@ -709,9 +709,9 @@ def root() -> str:
 			<div class="brand-mark">
 				<img src="/static/logo.png" alt="MediPower logo" />
 			</div>
-			<div class="kicker">Clinical Decision Support</div>
+			<div class="kicker">Research Demonstration — Not Clinical Decision Support</div>
 			<h1>MediPower</h1>
-			<p>Start with the most likely conditions first, then compare hospital options with clearer travel times, capability fit, and care continuity signals.</p>
+			<p>Experimental condition retrieval and facility ranking only. NOT a medical diagnosis, triage tool, or healthcare recommendation. Do not enter real patient information. If you need urgent help, contact local emergency services.</p>
 		</section>
 
 		<section class="panel">
@@ -967,7 +967,7 @@ def root() -> str:
 			const emergencyHit = text.includes("chest pain") || names.some(n => ["acute coronary", "pericarditis", "myocarditis", "pulmonary embolism"].some(k => n.includes(k)));
 			if (emergencyHit) {
 				emergencyBannerEl.style.display = "block";
-				emergencyBannerEl.textContent = "⚠ Chest pain can be serious. If symptoms are severe, worsening, or associated with shortness of breath/fainting, call 911 or go to the nearest ED immediately.";
+				emergencyBannerEl.textContent = "⚠ Chest pain can be serious. If symptoms are severe, worsening, or associated with breathlessness or fainting, contact your local emergency services immediately. This demo cannot detect every emergency.";
 			} else {
 				emergencyBannerEl.style.display = "none";
 				emergencyBannerEl.textContent = "";
@@ -1165,7 +1165,7 @@ def root() -> str:
 			const actionButtons = diseaseListEl.querySelectorAll(".disease-action");
 			actionButtons.forEach(btn => {
 				btn.addEventListener("click", () => {
-					renderRecommendationChoices(btn.dataset.name || "Diagnosis", btn.dataset.mapped || "");
+					renderRecommendationChoices(btn.dataset.name || "Condition", btn.dataset.mapped || "");
 				});
 			});
 		}
@@ -1183,7 +1183,7 @@ def root() -> str:
 				return;
 			}
 
-			setStatus("Finding top diagnoses...");
+			setStatus("Retrieving candidate condition information...");
 			diseaseListEl.innerHTML = "";
 			recHeaderEl.textContent = "Recommended Hospitals for:";
 			tradeoffBoxEl.style.display = "none";
@@ -1214,7 +1214,7 @@ def root() -> str:
 				} else if (data.resolved_location && data.resolved_location.note) {
 					setStatus(data.resolved_location.note, true);
 				} else {
-					setStatus("Diagnosis list ready. Click a diagnosis to view recommendations.");
+					setStatus("Research ranking ready; this is not a diagnosis. Select a condition to explore experimental facility rankings.");
 				}
 			} catch (err) {
 				setStatus(err.message || "Prediction failed.", true);
@@ -1236,7 +1236,7 @@ def root() -> str:
 @app.get("/status")
 def status() -> dict:
 	return {
-		"service": "Healthcare Diagnosis + Recommendation System",
+		"service": "MediPower Experimental Condition Retrieval",
 		"status": "ok",
 		"docs": "/docs",
 	}
