@@ -185,3 +185,7 @@ so you can quickly review diseases that still need a valid DiagnosisValue.
 ### M11 — Prospective, double-annotated task-intent cohort
 
 [Study protocol and local development-only evaluation workflow](research/M11_PROSPECTIVE_INTENT_PROTOCOL.md). New tooling enforces explicit data-rights statements, two independent reviewer IDs, third-party adjudication when labels differ, source/template/exact text separation across splits and strict official-test procedural locks. It distinguishes symptomatic queries from nonclinical requests, general health information, out-of-catalog clinical cases and ambiguous requests. **No prospective annotations have been collected or certified yet.** Previous M10 results showed 8/10 false abstentions on post-hoc constructed symptom questions, so the M9 prototype gate remains research-only.
+
+### Phase 1 R2 — Independent intent annotation operations
+
+[Human review packets, reconciliation and development-only evaluation](research/R2_ANNOTATION_OPERATIONS.md). These scripts are an operational extension to the M11 study protocol; real source permissions and independent human labels remain outstanding. Do not treat this as a finished independent benchmark.
