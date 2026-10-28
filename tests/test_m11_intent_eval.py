@@ -7,7 +7,7 @@ import unittest
 
 from research.evaluate_annotated_intent import evaluate, check_query_manifest
 from research.export_intent_cohort import export
-from tests.test_m11_intent_cohort import annotated, write_csv
+from test_m11_intent_cohort import annotated, write_csv
 
 
 def mock_margin(qid: str, margin: float) -> dict:
