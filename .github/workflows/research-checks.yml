@@ -5,6 +5,7 @@ on:
     paths:
       - 'research/**'
       - 'tests/**'
+      - 'scripts/**'
       - 'app/utils/symptom_matching.py'
       - 'app/api/**'
       - 'app/main.py'
@@ -104,6 +105,14 @@ jobs:
           trap 'kill "$backend_pid" "$frontend_pid" 2>/dev/null || true' EXIT
           python -m scripts.smoke_phase1 --backend http://127.0.0.1:8000 --frontend http://127.0.0.1:3000 || {
             cat /tmp/medipower-api.log
+            cat /tmp/medipower-web.log
+            exit 1
+          }
+          # The Next.js proxy must fail closed when FastAPI becomes unreachable.
+          # Only a synthetic, fixed request is used; no patient or location data.
+          kill "$backend_pid"
+          wait "$backend_pid" 2>/dev/null || true
+          python -m scripts.w5_deployment_preflight --mode outage --frontend http://127.0.0.1:3000 || {
             cat /tmp/medipower-web.log
             exit 1
           }
