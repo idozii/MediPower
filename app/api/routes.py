@@ -11,7 +11,7 @@ router = APIRouter()
 
 _disease_service: DiseaseService | None = None
 _recommendation_service: RecommendationService | None = None
-_NO_MATCH_MESSAGE = "No reliable diagnosis match found. Try adding more specific symptoms or duration details."
+_NO_MATCH_MESSAGE = "No suitable information-retrieval match found. This is not a diagnosis or clinical triage."
 
 
 def get_disease_service() -> DiseaseService:
@@ -29,10 +29,10 @@ def get_recommendation_service() -> RecommendationService:
 
 
 class PredictRequest(BaseModel):
-    text: str = Field(..., min_length=3)
-    location: str | None = None
-    lat: float | None = None
-    lon: float | None = None
+    text: str = Field(..., min_length=3, max_length=2000)
+    location: str | None = Field(default=None, max_length=160)
+    lat: float | None = Field(default=None, ge=-90, le=90)
+    lon: float | None = Field(default=None, ge=-180, le=180)
     top_k: int = Field(default=TOP_K_DISEASES_DEFAULT, ge=1, le=20)
 
 
@@ -89,4 +89,6 @@ def predict(payload: PredictRequest) -> dict:
         "retrieval_mode": disease_service.get_mode(),
         "resolved_location": resolved or {"lat": lat, "lon": lon, "source": "direct_coordinates"},
         "message": message,
+        "research_use_only": True,
+        "ranking_score_notice": "Scores are retrieval heuristics, not medical probabilities or clinical advice.",
     }
