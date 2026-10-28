@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from app.services.scoring import compute_score
+from app.services.ranking_transparency import annotate_ranked_facilities
 from app.utils.distance import haversine_km
 
 
@@ -584,7 +585,7 @@ class RecommendationService:
         if self.has_clinic_matrix:
             out = self._recommend_from_clinic_matrix(diseases=diseases, user_location=user_location, top_k=effective_top_k)
             if out:
-                return out
+                return annotate_ranked_facilities(out, matrix_enabled=True)
 
         target_departments = self._extract_department_names(diseases)
 
@@ -620,4 +621,4 @@ class RecommendationService:
             "score",
         ]
         cols = [c for c in cols if c in merged.columns]
-        return merged[cols].head(effective_top_k).to_dict(orient="records")
+        return annotate_ranked_facilities(merged[cols].head(effective_top_k).to_dict(orient="records"), matrix_enabled=False)
