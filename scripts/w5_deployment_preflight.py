@@ -16,6 +16,7 @@ import json
 import time
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+from urllib.parse import urlsplit
 
 
 SYNTHETIC_REQUEST = {
@@ -26,9 +27,22 @@ SYNTHETIC_REQUEST = {
 }
 
 
+def validate_loopback(frontend: str) -> None:
+    parsed = urlsplit(frontend)
+    if (parsed.scheme != "http" or parsed.hostname not in {"127.0.0.1", "localhost"}
+            or parsed.username is not None or parsed.password is not None
+            or parsed.path not in {"", "/"} or parsed.query or parsed.fragment):
+        raise ValueError("W5 preflight only accepts simple loopback HTTP origins")
+    try:
+        port = parsed.port
+    except ValueError as exc:
+        raise ValueError("Invalid port") from exc
+    if port is None or port <= 0:
+        raise ValueError("A loopback port is required")
+
+
 def fetch_json(frontend: str, path: str, *, body: dict | None = None) -> tuple[int, dict, dict]:
-    if not frontend.startswith("http://127.0.0.1:") and not frontend.startswith("http://localhost:"):
-        raise ValueError("W5 preflight intentionally permits loopback HTTP only")
+    validate_loopback(frontend)
     encoded = None if body is None else json.dumps(body, separators=(",", ":")).encode("utf-8")
     req = Request(
         frontend.rstrip("/") + path,
@@ -50,8 +64,7 @@ def header(headers: dict, key: str) -> str:
 def verify(mode: str, frontend: str, *, timeout: float = 15.0) -> dict:
     if mode not in {"ready", "outage"}:
         raise ValueError("Mode must be ready or outage")
-    if not frontend.startswith("http://127.0.0.1:") and not frontend.startswith("http://localhost:"):
-        raise ValueError("W5 preflight intentionally permits loopback HTTP only")
+    validate_loopback(frontend)
 
     deadline = time.monotonic() + timeout
     last_status = None
