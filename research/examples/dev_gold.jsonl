@@ -1,0 +1,4 @@
+{"query_id":"example-01","split":"development","relevant_disease_ids":["2","21"]}
+{"query_id":"example-02","split":"development","relevant_disease_ids":["26"]}
+{"query_id":"example-03","split":"development","relevant_disease_ids":["18"]}
+{"query_id":"example-negative","split":"development","relevant_disease_ids":[],"expected_abstain":true}
