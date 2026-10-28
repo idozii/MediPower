@@ -50,3 +50,21 @@ The test set remains **blocked** until written external authorization and frozen
 - Explicit limitations, abstention/failure analyses, and qualified clinical review **before** any patient-facing claims.
 
 **Current blocker:** No new prospective independently annotated cohort has been collected, so M11 implements protocol and software checks only. Do not call it external validation or a conference-ready result.
+
+## Complete development workflow once annotation approvals exist
+
+After the development annotation CSV passes the audit, export its **query text and intent labels into different private JSONL files**. These are not disease-relevance labels:
+
+    python -m research.export_intent_cohort --development research/private_data/intent_cohort/development.csv --out-dir research/outputs/m11-intent-dev
+
+Use the unchanged, frozen M9 prototypes to export margins; the command needs an already authorized local SentenceTransformer model:
+
+    python -m research.export_intent_margins --queries research/outputs/m11-intent-dev/queries.jsonl --out-dir research/outputs/m11-intent-margins
+
+Then evaluate the threshold **0** without tuning it against the new evaluation results:
+
+    python -m research.evaluate_annotated_intent --queries research/outputs/m11-intent-dev/queries.jsonl --gold research/outputs/m11-intent-dev/intent_gold.jsonl --margins research/outputs/m11-intent-margins/intent_margins.jsonl --out research/outputs/m11-intent-dev/evaluation.json
+
+The evaluator checks manifest SHA256 compatibility, requires the same query ID set, prints only aggregate label counts and acceptance rates and keeps general health, open-set clinical and ambiguous labels **outside** the narrow binary symptom-vs-nonclinical comparison. A manually approved dataset with single annotator, unclear rights or missing source provenance is not accepted as valid.
+
+Report a sample-size rationale and cluster-aware uncertainty before quoting statistical significance. No real patient-level text should be sent to ChatGPT or pushed to the public repo. M11's English-language token-normalization duplicate check is a partial safeguard, not a complete multilingual or paraphrase deduplication system.
