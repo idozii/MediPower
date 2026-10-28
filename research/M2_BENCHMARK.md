@@ -4,6 +4,8 @@
 
 ## Verified raw-data inspection (28 October 2026)
 
+**Verified CI evidence:** [M2 development audit results](results/M2_DEV_AUDIT_2026-10-28.md), including confirmed train/test overlap and classifier split metrics.
+
 The repository's `diagnosis_dataset.csv` contains **800 rows** across **8 classes** (100 per class). A simple case/punctuation/whitespace-normalized comparison found **735 unique strings / 65 extra duplicate rows** and **0 conflicting disease labels** among those duplicate strings. All 800 sentences use one of five repeated lead-in phrases. The checked-in classifier report lists 1.0 accuracy and macro-F1 on 160 random-split samples. **The exact cross-split leakage count and group-split model performance require running the audit script and inspecting its output; do not infer them from these counts.** This is a highly templated data source, not an externally validated clinical cohort.
 
 ## Reproduce classifier audit
