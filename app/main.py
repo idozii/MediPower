@@ -1,8 +1,10 @@
 from pathlib import Path
 import os
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from starlette.responses import Response
 
 from app.api.routes import router
 
@@ -11,6 +13,30 @@ app = FastAPI(
     docs_url="/docs",
     openapi_url="/openapi.json",
 )
+# Default FastAPI/Pydantic validation responses may echo malformed input.
+# Never include symptom text, location text or the rejected raw JSON in a
+# public error message. Access/reverse-proxy logs are separate infrastructure.
+@app.exception_handler(RequestValidationError)
+async def sanitized_validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
+    return JSONResponse(
+        {"detail": "Invalid research request. Check fictional symptom length, location and top_k."},
+        status_code=422,
+        headers={"Cache-Control": "no-store"},
+    )
+
+
+@app.middleware("http")
+async def research_response_privacy_headers(request: Request, call_next) -> Response:
+    response = await call_next(request)
+    # These are supplemental response protections, not PHI compliance controls.
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["X-Frame-Options"] = "DENY"
+    if request.url.path.startswith("/predict") or request.url.path in {"/health", "/status"}:
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 app.include_router(router)
 
 # Only the explicitly public logo is served; never expose the project root.
