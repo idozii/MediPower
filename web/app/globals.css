@@ -448,3 +448,50 @@ code {
     font-size: clamp(1.9rem, 11vw, 3rem);
   }
 }
+/* Phase-1 W1: keyboard navigation, legible helper text and low-motion behavior. */
+.skip-link {
+  position: absolute;
+  z-index: 100;
+  left: 16px;
+  top: -72px;
+  background: #fff;
+  color: #15211c;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 2px solid var(--accent);
+}
+.skip-link:focus { top: 12px; }
+:focus-visible {
+  outline: 3px solid #166a57;
+  outline-offset: 3px;
+}
+.field-hint {
+  display: block;
+  font-size: 0.81rem;
+  font-weight: 400;
+  line-height: 1.45;
+  color: #44564a;
+}
+.research-disclosure {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #46594f;
+}
+.form-panel input[aria-invalid="true"],
+.form-panel textarea[aria-invalid="true"] {
+  border-color: #aa322d;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (max-width: 480px) {
+  .panel, .hero-copy, .hero-card { border-radius: 16px; }
+  .result-card-head { flex-direction: column; }
+  .score-pill { justify-content: flex-start; }
+  .primary-button { width: 100%; }
+  .sample-row { display: grid; grid-template-columns: 1fr; width: 100%; }
+}
