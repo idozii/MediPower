@@ -1,9 +1,8 @@
 from pathlib import Path
 import os
 
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse, HTMLResponse
 
 from app.api.routes import router
 
@@ -14,13 +13,13 @@ app = FastAPI(
 )
 app.include_router(router)
 
-# Mount static files only if directory exists
-static_dir = Path(__file__).resolve().parents[1]
-if static_dir.exists():
-    try:
-        app.mount("/static", StaticFiles(directory=static_dir), name="static")
-    except Exception as e:
-        print(f"Warning: Could not mount static files: {e}")
+# Only the explicitly public logo is served; never expose the project root.
+@app.get("/static/logo.png", include_in_schema=False)
+def logo() -> FileResponse:
+    logo_path = Path(__file__).resolve().parents[1] / "logo.png"
+    if not logo_path.is_file():
+        raise HTTPException(status_code=404, detail="Logo not found")
+    return FileResponse(path=logo_path, media_type="image/png")
 
 @app.on_event("startup")
 async def startup_event():
