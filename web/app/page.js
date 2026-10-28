@@ -137,9 +137,9 @@ export default function Page() {
       <section className="hero">
         <div className="hero-copy">
           <p className="eyebrow">Vercel-ready frontend</p>
-          <h1>Healthcare AI triage with a cleaner deployment path</h1>
+          <h1>MediPower — research-only condition information retrieval</h1>
           <p>
-            Keep the Python diagnosis engine where it works best, and put the user-facing experience on Next.js so Vercel can handle the UI and API proxy.
+            Experimental retrieval and facility-ranking demo. Not a medical diagnosis, triage service, or substitute for qualified care. Do not enter identifying or real patient health information. In an emergency, contact your local emergency services.
           </p>
           <div className="hero-badges">
             <span>Next.js App Router</span>
@@ -164,7 +164,7 @@ export default function Page() {
           <div className="panel-header">
             <div>
               <p className="section-label">Symptom intake</p>
-              <h2>Ask for a diagnosis and care recommendation</h2>
+              <h2>Explore candidate condition information (research only)</h2>
             </div>
             <div className="sample-row">
               {EXAMPLES.map((example) => (
@@ -181,7 +181,7 @@ export default function Page() {
               required
               value={form.text}
               onChange={(event) => setForm((current) => ({ ...current, text: event.target.value }))}
-              placeholder="Describe the patient symptoms, duration, and severity"
+              placeholder="Use fictional example symptoms only; no real patient information"
             />
           </label>
 
@@ -246,7 +246,7 @@ export default function Page() {
 
           {!result ? (
             <div className="empty-state">
-              <h3>Awaiting a prediction</h3>
+              <h3>Awaiting a research query</h3>
               <p>Submit a symptom description to see the top diseases and recommended departments or hospitals.</p>
             </div>
           ) : (
@@ -262,12 +262,12 @@ export default function Page() {
                 </div>
                 <div className="summary-card">
                   <span className="summary-label">Message</span>
-                  <strong>{result.message || "Prediction ready"}</strong>
+                  <strong>{result.message || "Retrieval completed (not a diagnosis)"}</strong>
                 </div>
               </div>
 
               <div className="result-block">
-                <h3>Top diseases</h3>
+                <h3>Retrieved candidate conditions</h3>
                 <div className="stack">
                   {diseases.length > 0 ? (
                     diseases.map((disease, index) => (
@@ -277,13 +277,13 @@ export default function Page() {
                             <span className="rank-badge">#{index + 1}</span>
                             <h4>{disease.disease_name || disease.Disease || "Unknown disease"}</h4>
                           </div>
-                          <span className="score-pill">{scoreLabel(disease.score ?? disease.confidence ?? disease.similarity)}</span>
+                          <span className="score-pill">Ranking score: {scoreLabel(disease.score ?? disease.confidence ?? disease.similarity)}</span>
                         </div>
                         <p>{disease.description || disease.summary || disease.reason || "No extra description returned."}</p>
                       </article>
                     ))
                   ) : (
-                    <p>No reliable diagnosis match returned.</p>
+                    <p>No suitable retrieval match returned; this tool cannot rule out illness.</p>
                   )}
                 </div>
               </div>
