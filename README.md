@@ -181,3 +181,7 @@ so you can quickly review diseases that still need a valid DiagnosisValue.
 ### M10 — Intent risk–coverage diagnostics
 
 [M10: frozen M9 intent margins, false-abstention analysis and descriptive risk–coverage grid](research/M10_INTENT_RISK_COVERAGE.md). The owner's post-hoc M9 local run rejected 8/10 constructed symptom-information queries despite reducing off-topic false positives, so the experimental gate is **not approved for production**. M10 does not tune the gate or claim independent validation.
+
+### M11 — Prospective, double-annotated task-intent cohort
+
+[Study protocol and local development-only evaluation workflow](research/M11_PROSPECTIVE_INTENT_PROTOCOL.md). New tooling enforces explicit data-rights statements, two independent reviewer IDs, third-party adjudication when labels differ, source/template/exact text separation across splits and strict official-test procedural locks. It distinguishes symptomatic queries from nonclinical requests, general health information, out-of-catalog clinical cases and ambiguous requests. **No prospective annotations have been collected or certified yet.** Previous M10 results showed 8/10 false abstentions on post-hoc constructed symptom questions, so the M9 prototype gate remains research-only.
