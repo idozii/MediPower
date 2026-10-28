@@ -21,6 +21,11 @@ DIAGNOSIS_CLASSIFIER_PATH = DATA_DIR / "diagnosis_classifier.joblib"
 # Default OFF to keep startup stable in offline or unstable-network environments.
 ALLOW_MODEL_DOWNLOAD = _env_bool("ALLOW_MODEL_DOWNLOAD", default=False)
 
+# Privacy-by-default: never send free-form location text to a third-party geocoder
+# unless the operator explicitly opts in, documents privacy implications and
+# applies a suitable server-side disclosure/consent policy.
+ALLOW_EXTERNAL_GEOCODING = _env_bool("ALLOW_EXTERNAL_GEOCODING", default=False)
+
 # On serverless (e.g. Vercel), use lightweight retriever by default to reduce cold-start latency.
 IS_SERVERLESS = _env_bool("VERCEL", default=False) or _env_bool("SERVERLESS", default=False)
 FORCE_OFFLINE_RETRIEVER = _env_bool("FORCE_OFFLINE_RETRIEVER", default=IS_SERVERLESS)
