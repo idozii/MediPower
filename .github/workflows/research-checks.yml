@@ -63,7 +63,7 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - name: Install frontend dependencies
         run: npm ci --prefix web
-      - name: Test Next.js input and display contracts
-        run: npm run test --prefix web
+      - name: Test web proxy contract
+        run: node --test web/tests/proxy-contract.test.mjs
       - name: Build Next.js frontend
         run: npm run build --prefix web

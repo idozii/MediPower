@@ -1,52 +1,77 @@
 import { NextResponse } from "next/server";
+import { checkPredictionPayload, resolveBackendBaseUrl, sanitizedBackendError } from "../../../lib/proxy-contract.mjs";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function getBackendBaseUrl() {
-  return (
-    process.env.HEALTHCARE_AI_API_BASE_URL ||
-    process.env.NEXT_PUBLIC_HEALTHCARE_AI_API_BASE_URL ||
-    "http://127.0.0.1:8000"
-  );
+const MAX_BODY_BYTES = 16384;
+const REQUEST_TIMEOUT_MS = 15000;
+const HEADERS = { "cache-control": "no-store", "x-content-type-options": "nosniff" };
+
+function json(data, status = 200) {
+  return NextResponse.json(data, { status, headers: HEADERS });
 }
 
 export async function POST(request) {
-  let payload;
-  try {
-    payload = await request.json();
-  } catch {
-    return NextResponse.json({ detail: "Invalid JSON body." }, { status: 400 });
+  if (!request.headers.get("content-type")?.toLowerCase().includes("application/json")) {
+    return json({ detail: "Content-Type must be application/json." }, 415);
+  }
+  const declaredLength = Number(request.headers.get("content-length") || "0");
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_BODY_BYTES) {
+    return json({ detail: "Input payload is too large for this research demo." }, 413);
   }
 
-  const backendUrl = new URL("/predict", getBackendBaseUrl());
+  let payload;
+  try {
+    const raw = await request.text();
+    if (new TextEncoder().encode(raw).byteLength > MAX_BODY_BYTES) {
+      return json({ detail: "Input payload is too large for this research demo." }, 413);
+    }
+    payload = JSON.parse(raw);
+  } catch {
+    return json({ detail: "Invalid JSON request." }, 400);
+  }
+  const validationError = checkPredictionPayload(payload);
+  if (validationError) return json({ detail: validationError }, 422);
+
+  let backendUrl;
+  try {
+    const configured = resolveBackendBaseUrl(process.env.HEALTHCARE_AI_API_BASE_URL);
+    backendUrl = new URL("predict", configured.href.endsWith("/") ? configured.href : configured.href + "/");
+  } catch {
+    return json({ detail: "Research backend configuration is unavailable." }, 503);
+  }
 
   let response;
   try {
     response = await fetch(backendUrl, {
       method: "POST",
-      headers: {
-        "content-type": "application/json"
-      },
+      headers: { "content-type": "application/json" },
       body: JSON.stringify(payload),
-      cache: "no-store"
+      cache: "no-store",
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
-  } catch {
-    return NextResponse.json(
-      {
-        detail: `Could not reach the backend at ${backendUrl.origin}. Set HEALTHCARE_AI_API_BASE_URL on Vercel or run the Python API locally.`
-      },
-      { status: 502 }
-    );
+  } catch (error) {
+    const timedOut = error?.name === "TimeoutError" || error?.name === "AbortError";
+    return json({ detail: timedOut ? "Research backend timed out; try again later." :
+      "Research backend could not be reached. Verify service status." }, timedOut ? 504 : 502);
   }
 
-  const contentType = response.headers.get("content-type") || "application/json";
-  const body = await response.text();
-
-  return new NextResponse(body, {
-    status: response.status,
-    headers: {
-      "content-type": contentType
-    }
-  });
+  // Reject non-JSON responses instead of reflecting HTML, tracebacks or other
+  // unintended backend content into a public page.
+  if (!response.headers.get("content-type")?.toLowerCase().includes("application/json")) {
+    return json({ detail: "Research backend returned an unexpected response format." }, 502);
+  }
+  let data;
+  try { data = await response.json(); }
+  catch { return json({ detail: "Research backend returned invalid JSON." }, 502); }
+  if (!response.ok) {
+    return json({ detail: sanitizedBackendError(data, response.status) },
+      response.status >= 400 && response.status < 500 ? response.status : 502);
+  }
+  if (!data || typeof data !== "object" || !Array.isArray(data.diseases) ||
+      data.research_use_only !== true) {
+    return json({ detail: "Research backend response contract is invalid." }, 502);
+  }
+  return json(data);
 }
