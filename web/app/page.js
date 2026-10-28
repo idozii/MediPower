@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { formatRankingScore, makeRequestBody, validateResearchForm, MAX_SYMPTOM_CHARS } from "../lib/research-form.mjs";
 
 const EXAMPLES = [
   {
@@ -51,31 +52,7 @@ function formatDistance(value) {
 }
 
 function scoreLabel(value) {
-  const score = Number(value);
-  if (!Number.isFinite(score)) {
-    return "0%";
-  }
-  return `${Math.round(score * 100)}%`;
-}
-
-function makeRequestBody(form) {
-  const payload = {
-    text: form.text.trim(),
-    top_k: Number(form.top_k) || 5
-  };
-
-  if (form.location.trim()) {
-    payload.location = form.location.trim();
-  }
-
-  const lat = form.lat.trim();
-  const lon = form.lon.trim();
-  if (lat && lon) {
-    payload.lat = Number(lat);
-    payload.lon = Number(lon);
-  }
-
-  return payload;
+  return formatRankingScore(value);
 }
 
 export default function Page() {
@@ -97,6 +74,12 @@ export default function Page() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    if (loading) return;
+    const problem = validateResearchForm(form);
+    if (problem) {
+      setError(problem);
+      return;
+    }
     setLoading(true);
     setError("");
     setResult(null);
@@ -112,9 +95,12 @@ export default function Page() {
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data?.detail || "Prediction request failed.");
+        const detail = typeof data?.detail === "string" ? data.detail : null;
+        throw new Error(detail || "Research API is unavailable. Check the backend service.");
       }
-
+      if (!data || !Array.isArray(data.diseases) || !data.research_use_only) {
+        throw new Error("Unexpected research response format. Do not rely on these results.");
+      }
       setResult(data);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Prediction request failed.");
@@ -133,34 +119,34 @@ export default function Page() {
   }
 
   return (
-    <main className="shell">
+    <main id="main-content" className="shell">
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">Vercel-ready frontend</p>
+          <p className="eyebrow">MediPower / Research prototype</p>
           <h1>MediPower — research-only condition information retrieval</h1>
           <p>
-            Experimental retrieval and facility-ranking demo. Not a medical diagnosis, triage service, or substitute for qualified care. Do not enter identifying or real patient health information. In an emergency, contact your local emergency services.
+            Experimental condition retrieval and facility ranking for fictional examples only. Not a medical diagnosis, triage service, or substitute for qualified care. Do not enter identifying or real patient health information. In an emergency, contact your local emergency services.
           </p>
-          <div className="hero-badges">
-            <span>Next.js App Router</span>
-            <span>Proxy API route</span>
-            <span>FastAPI backend compatible</span>
+          <div className="hero-badges" aria-label="Research capabilities">
+            <span>Reproducible retrieval</span>
+            <span>Explainable ranking prototype</span>
+            <span>Non-clinical evaluation</span>
           </div>
         </div>
 
         <div className="hero-card">
           <div className="hero-card-top">
-            <span className="status-pill">Deployment model</span>
-            <strong>Frontend on Vercel</strong>
+            <span className="status-pill">Research boundary</span>
+            <strong>Interpret outputs as hypotheses</strong>
           </div>
           <p>
-            Set <code>HEALTHCARE_AI_API_BASE_URL</code> to the Python service URL, and the Next.js app will forward prediction requests through <code>/api/predict</code>.
+            An experimental ranking score is not a disease probability, facility quality assessment, or clinical referral. The system may return an incorrect or incomplete set of candidates.
           </p>
         </div>
       </section>
 
       <section className="content-grid">
-        <form className="panel form-panel" onSubmit={handleSubmit}>
+        <form className="panel form-panel" onSubmit={handleSubmit} aria-busy={loading} noValidate>
           <div className="panel-header">
             <div>
               <p className="section-label">Symptom intake</p>
@@ -175,23 +161,29 @@ export default function Page() {
             </div>
           </div>
 
-          <label>
-            Symptoms
+          <label htmlFor="research-symptoms">
+            Fictional symptoms (research examples only)
             <textarea
+              id="research-symptoms"
+              name="research-symptoms"
+              maxLength={MAX_SYMPTOM_CHARS}
+              aria-describedby="symptom-hint"
               required
               value={form.text}
               onChange={(event) => setForm((current) => ({ ...current, text: event.target.value }))}
               placeholder="Use fictional example symptoms only; no real patient information"
             />
+            <span id="symptom-hint" className="field-hint">Do not submit real patient information · {form.text.length}/{MAX_SYMPTOM_CHARS} characters</span>
           </label>
 
           <div className="field-grid">
             <label>
               Location text
               <input
+                maxLength={160}
                 value={form.location}
                 onChange={(event) => setForm((current) => ({ ...current, location: event.target.value }))}
-                placeholder="City, suburb, or address"
+                placeholder="Example: Sydney CBD (fictional)"
               />
             </label>
 
@@ -202,6 +194,7 @@ export default function Page() {
                   value={form.lat}
                   onChange={(event) => setForm((current) => ({ ...current, lat: event.target.value }))}
                   placeholder="Optional"
+                  inputMode="decimal"
                 />
               </label>
               <label>
@@ -210,6 +203,7 @@ export default function Page() {
                   value={form.lon}
                   onChange={(event) => setForm((current) => ({ ...current, lon: event.target.value }))}
                   placeholder="Optional"
+                  inputMode="decimal"
                 />
               </label>
             </div>
@@ -228,14 +222,16 @@ export default function Page() {
 
           <div className="actions">
             <button type="submit" className="primary-button" disabled={loading}>
-              {loading ? "Running model..." : "Generate recommendation"}
+              {loading ? "Retrieving..." : "Explore research rankings"}
             </button>
           </div>
 
-          {error ? <p className="feedback error">{error}</p> : <p className="feedback">The API accepts either a location string or coordinates.</p>}
+          <div role="status" aria-live="polite" aria-atomic="true">
+            {error ? <p className="feedback error" role="alert">{error}</p> : <p className="feedback">Provide a city OR both coordinates. No patient data should be entered.</p>}
+          </div>
         </form>
 
-        <section className="panel results-panel">
+        <section className="panel results-panel" aria-busy={loading} aria-live="polite" aria-label="Experimental retrieval results">
           <div className="panel-header compact">
             <div>
               <p className="section-label">Results</p>
@@ -246,8 +242,8 @@ export default function Page() {
 
           {!result ? (
             <div className="empty-state">
-              <h3>Awaiting a research query</h3>
-              <p>Submit a symptom description to see the top diseases and recommended departments or hospitals.</p>
+              <h3>{loading ? "Running research retrieval…" : "Awaiting a research query"}</h3>
+              <p>{loading ? "The model is retrieving candidate information. Results are not a diagnosis." : "Enter a fictional example to explore ranked condition information and experimental facility options."}</p>
             </div>
           ) : (
             <div className="results-stack">
@@ -277,7 +273,7 @@ export default function Page() {
                             <span className="rank-badge">#{index + 1}</span>
                             <h4>{disease.disease_name || disease.Disease || "Unknown disease"}</h4>
                           </div>
-                          <span className="score-pill">Ranking score: {scoreLabel(disease.score ?? disease.confidence ?? disease.similarity)}</span>
+                          <span className="score-pill" title="Uncalibrated retrieval score; not a disease probability">Ranking score: {scoreLabel(disease.score ?? disease.confidence ?? disease.similarity)}</span>
                         </div>
                         <p>{disease.description || disease.summary || disease.reason || "No extra description returned."}</p>
                       </article>
@@ -289,7 +285,8 @@ export default function Page() {
               </div>
 
               <div className="result-block">
-                <h3>Recommendations</h3>
+                <h3>Experimental facility rankings</h3>
+                <p className="research-disclosure">Facility scores can include simulated or unverified proxies. They do not assess clinical quality, availability or suitability. Always check the source data.</p>
                 {diseaseNames.length > 0 ? (
                   diseaseNames.map((diseaseName) => (
                     <div key={diseaseName} className="recommendation-group">
@@ -305,13 +302,14 @@ export default function Page() {
                                 <span className="rank-badge">#{index + 1}</span>
                                 <h4>{item.facility_name || item.hospital_name || "Unnamed facility"}</h4>
                               </div>
-                              <span className="score-pill">{scoreLabel(item.score)}</span>
+                              <span className="score-pill" title="Experimental ranking score, not quality or probability">{scoreLabel(item.score)}</span>
                             </div>
                             <p>{item.department_name || item.facility_type || "Care site"}</p>
+                            {item.ranking_explanation?.disclosure ? <p className="field-hint">{item.ranking_explanation.disclosure}</p> : null}
                             <div className="metric-row">
                               <span>Distance {formatDistance(item.distance_km)}</span>
-                              <span>Provider {scoreLabel(item.provider_score)}</span>
-                              <span>Drop {scoreLabel(item.drop_rate ? 1 - item.drop_rate : 0)}</span>
+                              <span>Provider proxy {scoreLabel(item.provider_score)}</span>
+                              <span>Retention proxy {scoreLabel(item.drop_rate == null ? null : 1 - item.drop_rate)}</span>
                             </div>
                           </article>
                         ))}
@@ -331,10 +329,11 @@ export default function Page() {
                             <span className="score-pill">{scoreLabel(item.score)}</span>
                           </div>
                           <p>{item.department_name || item.facility_type || "Care site"}</p>
+                          {item.ranking_explanation?.disclosure ? <p className="field-hint">{item.ranking_explanation.disclosure}</p> : null}
                           <div className="metric-row">
                             <span>Distance {formatDistance(item.distance_km)}</span>
-                            <span>Provider {scoreLabel(item.provider_score)}</span>
-                            <span>Drop {scoreLabel(item.drop_rate ? 1 - item.drop_rate : 0)}</span>
+                            <span>Provider proxy {scoreLabel(item.provider_score)}</span>
+                            <span>Retention proxy {scoreLabel(item.drop_rate == null ? null : 1 - item.drop_rate)}</span>
                           </div>
                         </article>
                       ))
