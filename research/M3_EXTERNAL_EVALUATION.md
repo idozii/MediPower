@@ -32,3 +32,7 @@ After downloading the English DDXPlus metadata, generate *pending* name-similari
 Output keeps target_disease_id blank and review_status pending. A reviewer must determine any equivalent labels; textual similarity is not medical equivalence. Copy reviewed rows to ddxplus_reviewed_mapping.csv only when truly approved. Send aggregate counts and status, not patient-level data.
 
 Official English publisher page: https://figshare.com/articles/dataset/DDXPlus_Dataset_English_/22687585 ; version 2 posted 9 March 2026. Record exact downloaded version, license, provenance and checksums before use.
+
+## Figshare 403 alternative
+
+For an opt-in community Hugging Face mirror **development validation only**, verified per-file hashes, and source caveats, see [M3 Figshare 403 fallback guide](M3_FIGSHARE_403_FALLBACK.md). This does not establish official provenance; never open the test split to resolve a browser error.
