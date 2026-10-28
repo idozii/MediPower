@@ -49,7 +49,7 @@ class M10RiskCoverageTests(unittest.TestCase):
 
     def test_zero_margin_confusion_and_ranking_on_all_positives(self):
         gold, margins, predicted = fake_fixture()
-        result = evaluate_curve(gold, margins, predicted, thresholds=(-.5, 0., .4), k=1)
+        result = evaluate_curve(gold, margins, predicted, thresholds=(-.5, 0., .6), k=1)
         row = result["at_frozen_zero_margin"]
         self.assertEqual(row["intent_accepted_positives"], 1)
         self.assertEqual(row["intent_accepted_negatives"], 1)
