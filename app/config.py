@@ -26,6 +26,10 @@ ALLOW_MODEL_DOWNLOAD = _env_bool("ALLOW_MODEL_DOWNLOAD", default=False)
 # applies a suitable server-side disclosure/consent policy.
 ALLOW_EXTERNAL_GEOCODING = _env_bool("ALLOW_EXTERNAL_GEOCODING", default=False)
 
+# Public sample-only demo: restrict direct /predict access to the documented
+# fictional scenarios. Keep off for private, local research experiments.
+MEDIPOWER_DEMO_PRESETS_ONLY = _env_bool("MEDIPOWER_DEMO_PRESETS_ONLY", default=False)
+
 # On serverless (e.g. Vercel), use lightweight retriever by default to reduce cold-start latency.
 IS_SERVERLESS = _env_bool("VERCEL", default=False) or _env_bool("SERVERLESS", default=False)
 FORCE_OFFLINE_RETRIEVER = _env_bool("FORCE_OFFLINE_RETRIEVER", default=IS_SERVERLESS)

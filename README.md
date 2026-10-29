@@ -193,3 +193,7 @@ so you can quickly review diseases that still need a valid DiagnosisValue.
 ### Phase 1 — Live Next.js/FastAPI integration gate
 
 [Nonclinical W1/W2/W3 smoke test and local runbook](research/PHASE1_W1_W3_INTEGRATION.md). This verifies live HTTP contracts between the production Next.js server, forced-offline FastAPI retrieval and experimental facility disclosures using a fictional example. Passing does NOT establish medical or facility-ranking accuracy. R2 independently annotated data remain outstanding.
+
+## W6 — Restricted public research demo (frontend redesign & deployment guide)
+
+The [W6 public demo guide](docs/W6_PUBLIC_DEMO_DEPLOYMENT.md) covers the redesigned Next.js research workspace, the `web/` root directory on Vercel, the lightweight offline FastAPI Docker service on Render, exact fictional-preset API gates on **both** sides, required deployment environment variables, and remaining privacy/security/research blockers. Deployment is an explicit owner action and is not performed by a passing PR. The application is **not** for patient use, diagnosis or clinical decision-making.

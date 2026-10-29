@@ -24,3 +24,15 @@ web/.next/
 
 # OS artifacts
 .DS_Store
+
+# Never bake local/private research materials or environment configuration
+.env
+.env.*
+!.env.example
+research/private_data/
+research/outputs/
+*.tar
+*.tar.gz
+*.zip
+*.mp4
+*.log

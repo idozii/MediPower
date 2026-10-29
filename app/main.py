@@ -7,11 +7,12 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from starlette.responses import Response
 
 from app.api.routes import router
+from app.config import MEDIPOWER_DEMO_PRESETS_ONLY
 
 app = FastAPI(
     title="MediPower — Experimental Condition Retrieval",
-    docs_url="/docs",
-    openapi_url="/openapi.json",
+    docs_url=None if MEDIPOWER_DEMO_PRESETS_ONLY else "/docs",
+    openapi_url=None if MEDIPOWER_DEMO_PRESETS_ONLY else "/openapi.json",
 )
 # Default FastAPI/Pydantic validation responses may echo malformed input.
 # Never include symptom text, location text or the rejected raw JSON in a
@@ -54,7 +55,9 @@ async def startup_event():
 
 @app.get("/", response_class=HTMLResponse)
 def root() -> str:
-		return """
+        if MEDIPOWER_DEMO_PRESETS_ONLY:
+            return """<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MediPower Research API</title></head><body style="font:16px system-ui;max-width:650px;margin:15vh auto;padding:24px;color:#17394a"><h1>MediPower research backend</h1><p>This endpoint serves a restricted fictional-scenario information retrieval demonstration. Not a medical diagnosis or clinical triage service. No real patient data.</p><p>Explore the accompanying Next.js research website. No clinical recommendations are offered here.</p></body></html>"""
+        return """
 <!doctype html>
 <html lang="en">
 <head>

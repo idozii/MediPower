@@ -6,13 +6,19 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Install Python dependencies first for better layer caching.
-COPY requirements.txt ./
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# Public research demo uses forced offline TF-IDF only. Avoid bundling
+# Torch, FAISS and SentenceTransformers into this lightweight image.
+COPY requirements-demo.txt ./
+RUN pip install --no-cache-dir -r requirements-demo.txt
 
-# Copy the application source.
-COPY . .
+COPY app ./app
+COPY logo.png ./logo.png
+
+ENV FORCE_OFFLINE_RETRIEVER=1 \
+    ALLOW_MODEL_DOWNLOAD=0 \
+    ALLOW_EXTERNAL_GEOCODING=0 \
+    MEDIPOWER_DEMO_PRESETS_ONLY=1
 
 EXPOSE 10000
 
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000} --no-access-log"]
