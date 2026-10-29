@@ -28,6 +28,7 @@ export const EXAMPLES = Object.freeze([
 
 export function isAllowedDemoPayload(payload) {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) return false;
+  if (Object.keys(payload).some(key => !["text", "location", "top_k"].includes(key))) return false;
   return EXAMPLES.some(example =>
     payload.text === example.text &&
     payload.location === example.location &&
