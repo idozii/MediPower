@@ -2,7 +2,8 @@ from fastapi import APIRouter
 from fastapi import HTTPException
 from pydantic import BaseModel, Field
 
-from app.config import TOP_K_DISEASES_DEFAULT
+from app.config import TOP_K_DISEASES_DEFAULT, MEDIPOWER_DEMO_PRESETS_ONLY
+from app.utils.demo_guard import is_public_demo_request
 from app.services.disease_service import DiseaseService
 from app.services.recommendation_service import RecommendationService
 from app.utils.geocoding import geocode_location
@@ -38,6 +39,13 @@ class PredictRequest(BaseModel):
 
 @router.post("/predict")
 def predict(payload: PredictRequest) -> dict:
+    # Enforce the public sample-only demo on the FastAPI origin itself.
+    # The Next.js frontend restriction cannot protect a directly accessed API.
+    if MEDIPOWER_DEMO_PRESETS_ONLY and not is_public_demo_request(
+        payload.text, payload.location, payload.top_k, payload.lat, payload.lon
+    ):
+        raise HTTPException(status_code=403, detail="Public research preview accepts fictional demo scenarios only.")
+
     disease_service = get_disease_service()
     recommendation_service = get_recommendation_service()
 
