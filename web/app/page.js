@@ -192,7 +192,7 @@ export default function Page() {
 
       <section className="boundary-banner" aria-label="Important safety disclaimer">
         <Glyph name="info" size={21}/>
-        <p><strong>Research prototype — not a healthcare service.</strong> Outputs may be incorrect or incomplete, and facility scores are not clinical quality ratings. Do not enter identifying information or real patient symptoms. For urgent medical concerns, contact local emergency services.</p>
+        <p><strong>Research prototype — not a healthcare service.</strong> Not a medical diagnosis, triage system or substitute for professional advice. Outputs may be incorrect or incomplete, and facility scores are not clinical quality ratings. Do not enter identifying or real patient health information. For urgent medical concerns, contact local emergency services.</p>
       </section>
 
       <section id="workspace" className="workspace">
@@ -273,7 +273,7 @@ export default function Page() {
                       <div className="condition-rank">{String(index + 1).padStart(2, "0")}</div>
                       <div className="condition-body"><h5>{disease.disease_name || disease.Disease || "Unspecified condition"}</h5>
                         <p>{disease.description || disease.summary || "No additional information returned."}</p>
-                        <div className="condition-footer"><EvidenceBadge>Retrieval score: {formatRankingScore(disease.score ?? disease.confidence ?? disease.similarity)}</EvidenceBadge></div>
+                        <div className="condition-footer"><EvidenceBadge>Ranking score: {formatRankingScore(disease.score ?? disease.confidence ?? disease.similarity)}</EvidenceBadge></div>
                       </div>
                     </article>
                   )) : <div className="no-results">No suitable information-retrieval matches. This does not rule out a medical condition.</div>}
