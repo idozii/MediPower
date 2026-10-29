@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isAllowedDemoPayload } from "../../../lib/demo-presets.mjs";
 import { checkPredictionPayload, resolveBackendBaseUrl, sanitizedBackendError } from "../../../lib/proxy-contract.mjs";
 
 export const runtime = "nodejs";
@@ -33,6 +34,9 @@ export async function POST(request) {
   }
   const validationError = checkPredictionPayload(payload);
   if (validationError) return json({ detail: validationError }, 422);
+  if (process.env.MEDIPOWER_PRESET_ONLY === "1" && !isAllowedDemoPayload(payload)) {
+    return json({ detail: "Choose one of the provided fictional scenarios for this research preview." }, 403);
+  }
 
   let backendUrl;
   try {
