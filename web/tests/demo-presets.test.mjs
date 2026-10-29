@@ -24,11 +24,6 @@ test("public preview refuses modified, patient-like, coordinate and unknown inpu
     { text: sample.text, location: sample.location, top_k: sample.top_k, extra: "unapproved" },
     null,
   ]) {
-    if (payload?.extra) {
-      // Backend ignores unrelated body keys; the documented fields remain intact.
-      assert.ok(isAllowedDemoPayload(payload));
-    } else {
-      assert.equal(isAllowedDemoPayload(payload), false);
-    }
+    assert.equal(isAllowedDemoPayload(payload), false);
   }
 });
