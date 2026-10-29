@@ -6,7 +6,12 @@ on:
       - 'research/**'
       - 'tests/**'
       - 'scripts/**'
-      - 'app/utils/symptom_matching.py'
+      - 'app/**'
+      - 'Dockerfile'
+      - 'render.yaml'
+      - 'requirements-demo.txt'
+      - '.dockerignore'
+      - 'docs/**'
       - 'app/api/**'
       - 'app/main.py'
       - 'web/**'
@@ -116,3 +121,40 @@ jobs:
             cat /tmp/medipower-web.log
             exit 1
           }
+
+  public-demo-docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build lightweight public research demo image
+        run: docker build --tag medipower-demo:ci .
+      - name: Verify sample-only direct API contract in actual container
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run -d --name medipower-demo-test -p 127.0.0.1:18000:10000 medipower-demo:ci
+          trap 'docker logs medipower-demo-test || true; docker rm -f medipower-demo-test >/dev/null 2>&1 || true' EXIT
+          ready=0
+          for attempt in $(seq 1 60); do
+            if curl -fsS --max-time 2 http://127.0.0.1:18000/health | grep -q '"healthy"'; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then
+            echo "Demo Docker backend failed its health contract" >&2
+            exit 1
+          fi
+          valid_code=$(curl --silent --output /tmp/medipower-valid.json --write-out '%{http_code}' \
+            --header 'content-type: application/json' \
+            --data '{"text":"fever, cough, body aches, sore throat","location":"Melbourne","top_k":5}' \
+            http://127.0.0.1:18000/predict)
+          test "$valid_code" = "200"
+          denied_code=$(curl --silent --output /tmp/medipower-denied.json --write-out '%{http_code}' \
+            --header 'content-type: application/json' \
+            --data '{"text":"fictional custom cough","location":"Melbourne","top_k":5}' \
+            http://127.0.0.1:18000/predict)
+          test "$denied_code" = "403"
+          echo "PASS_SAMPLE_ONLY_DOCKER_CONTRACT"
