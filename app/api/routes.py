@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi import HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from app.config import TOP_K_DISEASES_DEFAULT, MEDIPOWER_DEMO_PRESETS_ONLY
 from app.utils.demo_guard import is_public_demo_request
@@ -30,6 +30,8 @@ def get_recommendation_service() -> RecommendationService:
 
 
 class PredictRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     text: str = Field(..., min_length=3, max_length=2000)
     location: str | None = Field(default=None, max_length=160)
     lat: float | None = Field(default=None, ge=-90, le=90)
