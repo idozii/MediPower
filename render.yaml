@@ -1,15 +1,22 @@
+# Restricted, fictional-example FastAPI research demo only.
+# Choose a paid Render instance for reliably responsive public portfolio use:
+# Render Free spins down when idle. Do not enable public hosting until reviewed.
 services:
   - type: web
-    name: healthcare-ai
+    name: medipower-research-api
     env: docker
     plan: free
     dockerfilePath: ./Dockerfile
-    autoDeploy: true
-    healthCheckPath: /
+    autoDeploy: false
+    healthCheckPath: /health
     envVars:
-      - key: ALLOW_MODEL_DOWNLOAD
-        value: "0"
       - key: FORCE_OFFLINE_RETRIEVER
         value: "1"
+      - key: ALLOW_MODEL_DOWNLOAD
+        value: "0"
+      - key: ALLOW_EXTERNAL_GEOCODING
+        value: "0"
+      - key: MEDIPOWER_DEMO_PRESETS_ONLY
+        value: "1"
       - key: RETRIEVAL_QUERY_CACHE_SIZE
-        value: "256"
+        value: "64"
