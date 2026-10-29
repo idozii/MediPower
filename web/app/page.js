@@ -237,7 +237,7 @@ export default function Page() {
               </details>
             ) : null}
             <div className="submit-area">
-              <button className="submit-button" type="submit" disabled={loading || selectedExample === -1}>
+              <button className="submit-button" type="submit" disabled={loading || (!CUSTOM_INPUT_ENABLED && selectedExample === -1) || !form.text.trim()}>
                 {loading ? "Running research query…" : "Explore results"} <Glyph name="arrow" size={19}/>
               </button>
               <div className="submit-note"><Glyph name="shield" size={16}/> Results are informational ranking hypotheses only</div>
