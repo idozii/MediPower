@@ -4,10 +4,10 @@
 services:
   - type: web
     name: medipower-research-api
-    env: docker
+    runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile
-    autoDeploy: false
+    autoDeployTrigger: off
     healthCheckPath: /health
     envVars:
       - key: FORCE_OFFLINE_RETRIEVER
