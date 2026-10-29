@@ -1,0 +1,7 @@
+# Lightweight, offline-only public research demo dependencies.
+# Do not use for dense/FAISS research experiments; those use requirements.txt.
+fastapi>=0.115,<1
+uvicorn>=0.34,<1
+pandas>=2.2,<3
+numpy>=1.26,<3
+scikit-learn>=1.5,<2
