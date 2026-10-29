@@ -31,6 +31,15 @@ class PublicDemoGuardTests(unittest.TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertNotIn("fictional cough", response.text)
 
+    def test_extra_json_fields_are_rejected_without_echoing_private_text(self):
+        text, location, top_k = sorted(DEMO_SCENARIOS)[0]
+        response = TestClient(app).post("/predict", json={
+            "text": text, "location": location, "top_k": top_k,
+            "private_note": "FICTIONAL_MARKER_MUST_NOT_ECHO",
+        })
+        self.assertEqual(response.status_code, 422)
+        self.assertNotIn("FICTIONAL_MARKER_MUST_NOT_ECHO", response.text)
+
     def test_public_route_accepts_valid_preset_and_retains_scope(self):
         class Retriever:
             def get_diseases(self, text, top_k):
